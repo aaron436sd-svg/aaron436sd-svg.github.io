@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin — Update Daily Menu</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="css/styles.css">
+  <script defer src="js/main.js"></script>
+</head>
+<body>
+  <header class="site-header small-header">
+    <div class="container header-inner">
+      <a class="logo" href="index.html">Akácfa Étkezde</a>
+      <nav class="main-nav">
+        <a href="napi.html">Napi Menü</a>
+        <a href="etlap.html">Étlap</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1>Admin — Update Today's Offer</h1>
+    <p class="muted">This simple editor stores the daily offer in your browser (localStorage). Open this page on the restaurant manager's computer, update the fields and click Save. The website will read and show the saved offer on the homepage.</p>
+
+    <form id="adminForm">
+      <label>Title<br><input type="text" id="offerTitle" placeholder="e.g. Today's Offer: Gulyás" required></label>
+      <label>Soup / Starter<br><input type="text" id="offerSoup" placeholder="e.g. Gulyásleves — 1,100 HUF"></label>
+      <label>Main course<br><input type="text" id="offerMain" placeholder="e.g. Beef goulash with dumplings — 1,580 HUF"></label>
+      <label>Side / Dessert<br><input type="text" id="offerSide" placeholder="e.g. House salad — 300 HUF"></label>
+      <button class="btn primary" id="saveOffer">Save Offer</button>
+      <p id="adminMessage" class="muted"></p>
+    </form>
+
+    <p class="muted">Note: this is a lightweight editor for the restaurant owner to update the visible daily menu. For a server-backed CMS, ask me to add a simple Node/Netlify function integration.</p>
+  </main>
+
+  <footer class="site-footer small">
+    <div class="container footer-inner">Local editor — saved in browser storage</div>
+  </footer>
+
+</body>
+</html>
