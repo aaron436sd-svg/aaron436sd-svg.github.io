@@ -1,0 +1,34 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
+site_url: "https://aaron436sd-svg.github.io"
+
+collections:
+  - name: "daily_menu"
+    label: "Daily Menu"
+    label_singular: "Daily Offer"
+    folder: "data"
+    create: false
+    files:
+      - label: "Today's Offer"
+        name: "today"
+        file: "data/daily-menu.json"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Soup / Starter", name: "soup", widget: "string" }
+          - { label: "Main course", name: "main", widget: "string" }
+          - { label: "Side / Dessert", name: "side", widget: "string" }
+
+  - name: "gallery"
+    label: "Gallery"
+    folder: "content/gallery"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Image", name: "image", widget: "image" }
+      - { label: "Caption", name: "caption", widget: "string" }
