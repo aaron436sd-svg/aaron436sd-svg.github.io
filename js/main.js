@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function(){
         <li><strong>Main:</strong> ${escapeHtml(offer.main)}</li>
         <li><strong>Side/Dessert:</strong> ${escapeHtml(offer.side)}</li>
       </ul>
+      <p class="muted"><a href="/etlap.html">See full menu</a></p>
     `;
   }
 

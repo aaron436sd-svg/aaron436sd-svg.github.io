@@ -1,12 +1,14 @@
 <!doctype html>
 <html lang="en">
-<head>
+  <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Akácfa Étkezde</title>
   <meta name="description" content="Contact Akácfa Étkezde — address, phone, opening hours, and a simple contact form.">
   <meta name="keywords" content="contact, kapcsolat, Akácfa Étkezde, address, phone">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#f7efe6">
   <script defer src="js/main.js"></script>
 </head>
 <body>
@@ -41,7 +43,9 @@
 
       <div class="contact-form">
         <h2>Send us a message</h2>
-        <form id="contactForm">
+        <!-- Netlify Forms: data-netlify and hidden form-name required -->
+        <form id="contactForm" name="contact" method="POST" data-netlify="true">
+          <input type="hidden" name="form-name" value="contact">
           <label>Name<br><input type="text" name="name" required></label>
           <label>Email<br><input type="email" name="email" required></label>
           <label>Message<br><textarea name="message" required></textarea></label>
