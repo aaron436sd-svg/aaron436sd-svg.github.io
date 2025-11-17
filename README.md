@@ -27,6 +27,5 @@ Notes for the owner:
 - Replace `assets/menu.pdf` with a real exported PDF for printing.
 - Replace Unsplash placeholder images with real photography for best visual results.
 
-If you want, I can also:
-- Add a simple Netlify/Forms or serverless function to accept contact form submissions.
-- Convert this to a small CMS-backed site (Netlify CMS, Contentful, or a small Node/Express admin API).
+
+
