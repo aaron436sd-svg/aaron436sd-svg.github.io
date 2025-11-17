@@ -58,5 +58,28 @@ Next steps I can do for you (pick any):
 
 Tell me which next step to take and I will implement it and push the changes.
 
+Serverless email forwarding (SendGrid) — implemented
+--------------------------------------------------
+I added a Netlify Function at `netlify/functions/send-contact.js` that sends contact messages via the SendGrid API.
+
+Environment variables required in Netlify (Site settings -> Build & deploy -> Environment):
+- `SENDGRID_API_KEY` — your SendGrid API key
+- `RECIPIENT_EMAIL` — the restaurant email that should receive contact messages
+- `SENDER_EMAIL` (optional) — the `from` address used for outgoing mail (defaults to `no-reply@akacfaetkezde.local`)
+
+How it works:
+- The contact form is handled in `js/main.js` which sends form data to `/.netlify/functions/send-contact`.
+- The function uses the SendGrid REST API to deliver the email to `RECIPIENT_EMAIL`.
+
+To enable this feature:
+1. Add `SENDGRID_API_KEY` and `RECIPIENT_EMAIL` to your Netlify site's environment variables.
+2. Deploy the site (Netlify will build the function automatically).
+3. Test the contact form on the live site — the function will return success or an error message.
+
+Security & notes:
+- Keep your SendGrid API key secret — store it only in Netlify environment variables.
+- If you prefer another email provider (Mailgun, SMTP), I can adapt the function.
+
+
 
 

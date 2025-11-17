@@ -69,11 +69,32 @@ document.addEventListener('DOMContentLoaded', function(){
   // Contact form (dummy behaviour)
   const contactForm = document.getElementById('contactForm');
   if(contactForm){
-    contactForm.addEventListener('submit', function(e){
+    contactForm.addEventListener('submit', async function(e){
       e.preventDefault();
       const messageEl = document.getElementById('contactMessage');
-      messageEl.textContent = 'Thank you — your message was received (dummy).';
-      contactForm.reset();
+      const formData = new FormData(contactForm);
+      const payload = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        message: formData.get('message')
+      };
+      messageEl.textContent = 'Sending...';
+      try {
+        const res = await fetch('/.netlify/functions/send-contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          messageEl.textContent = 'Thank you — your message was sent.';
+          contactForm.reset();
+        } else {
+          const text = await res.text();
+          messageEl.textContent = 'Error sending message: ' + text;
+        }
+      } catch (err) {
+        messageEl.textContent = 'Network error: ' + err.message;
+      }
     });
   }
 
