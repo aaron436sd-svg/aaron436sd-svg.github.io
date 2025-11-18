@@ -44,13 +44,13 @@
       <div class="contact-form">
         <h2>Send us a message</h2>
         <!-- Netlify Forms: data-netlify and hidden form-name required -->
-        <form id="contactForm" name="contact" method="POST" data-netlify="true">
+        <!-- This form posts natively to Netlify Forms (no server or SendGrid required) -->
+        <form name="contact" method="POST" data-netlify="true" action="/thanks">
           <input type="hidden" name="form-name" value="contact">
           <label>Name<br><input type="text" name="name" required></label>
           <label>Email<br><input type="email" name="email" required></label>
           <label>Message<br><textarea name="message" required></textarea></label>
           <button type="submit" class="btn primary">Send</button>
-          <p id="contactMessage" class="muted"></p>
         </form>
       </div>
     </section>
