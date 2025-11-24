@@ -8,6 +8,21 @@ PIDFILE="$ROOT/.site_server.pid"
 LOG="$ROOT/.site_server.log"
 PORT=${PORT:-8080}
 
+# Try to find a process listening on $PORT. Returns the pids (one per line).
+find_pids_by_port() {
+  # prefer lsof if available
+  if command -v lsof >/dev/null 2>&1; then
+    lsof -ti tcp:"$PORT" 2>/dev/null || true
+    return
+  fi
+  # fallback to ss
+  if command -v ss >/dev/null 2>&1; then
+    ss -ltnp 2>/dev/null | awk -vP=":$PORT" '$4 ~ P { gsub(/.*pid=/,"",$0); gsub(/,.*$/,"",$0); print $NF }' | sed 's/[^0-9].*//' || true
+    return
+  fi
+  return 0
+}
+
 status() {
   if [ -f "$PIDFILE" ]; then
     pid=$(cat "$PIDFILE")
@@ -15,10 +30,21 @@ status() {
       echo "running (pid $pid) on port $PORT"
       return 0
     else
+      # pidfile exists but process not running -> try find by port
+      pids=$(find_pids_by_port)
+      if [ -n "$pids" ]; then
+        echo "running (pid $pids) on port $PORT (no pidfile)"
+        return 0
+      fi
       echo "stale pidfile (pid $pid not running)"
       return 2
     fi
   else
+    pids=$(find_pids_by_port)
+    if [ -n "$pids" ]; then
+      echo "running (pid $pids) on port $PORT"
+      return 0
+    fi
     echo "stopped"
     return 1
   fi
@@ -31,28 +57,45 @@ start() {
     echo "Already running"
     return 0
   fi
-  (cd "$ROOT" && python3 -m http.server "$PORT") >"$LOG" 2>&1 &
+  (cd "$ROOT" && nohup python3 -m http.server "$PORT" >"$LOG" 2>&1 &) 
   pid=$!
+  # if $! is empty, try to detect by port
+  if [ -z "$pid" ] || [ "$pid" -eq 0 ] 2>/dev/null; then
+    sleep 0.2
+    pid=$(find_pids_by_port | head -n1)
+  fi
   echo $pid > "$PIDFILE"
   echo "Started server (pid $pid) on port $PORT; logs: $LOG"
 }
 
 stop() {
+  stopped=1
   if [ -f "$PIDFILE" ]; then
     pid=$(cat "$PIDFILE")
     if kill "$pid" >/dev/null 2>&1; then
       rm -f "$PIDFILE"
       echo "Stopped server (pid $pid)"
-      return 0
+      stopped=0
     else
-      echo "Failed to stop pid $pid; removing pidfile"
+      echo "Could not kill pid $pid from pidfile; removing pidfile"
       rm -f "$PIDFILE"
-      return 2
     fi
-  else
-    echo "Not running"
-    return 1
   fi
+  # also try to find processes by port and kill them
+  pids=$(find_pids_by_port)
+  if [ -n "$pids" ]; then
+    for p in $pids; do
+      if kill "$p" >/dev/null 2>&1; then
+        echo "Stopped server (pid $p)"
+        stopped=0
+      fi
+    done
+  fi
+  if [ $stopped -eq 0 ]; then
+    return 0
+  fi
+  echo "Not running"
+  return 1
 }
 
 toggle() {
