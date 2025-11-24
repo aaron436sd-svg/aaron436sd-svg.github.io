@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# Simple site control script for the Akácfa site.
+# Usage: ./akacfa [start|stop|status|toggle]
+# Without args it toggles the server.
+
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+PIDFILE="$ROOT/.site_server.pid"
+LOG="$ROOT/.site_server.log"
+PORT=${PORT:-8080}
+
+status() {
+  if [ -f "$PIDFILE" ]; then
+    pid=$(cat "$PIDFILE")
+    if kill -0 "$pid" >/dev/null 2>&1; then
+      echo "running (pid $pid) on port $PORT"
+      return 0
+    else
+      echo "stale pidfile (pid $pid not running)"
+      return 2
+    fi
+  else
+    echo "stopped"
+    return 1
+  fi
+}
+
+start() {
+  status >/dev/null 2>&1
+  st=$?
+  if [ $st -eq 0 ]; then
+    echo "Already running"
+    return 0
+  fi
+  (cd "$ROOT" && python3 -m http.server "$PORT") >"$LOG" 2>&1 &
+  pid=$!
+  echo $pid > "$PIDFILE"
+  echo "Started server (pid $pid) on port $PORT; logs: $LOG"
+}
+
+stop() {
+  if [ -f "$PIDFILE" ]; then
+    pid=$(cat "$PIDFILE")
+    if kill "$pid" >/dev/null 2>&1; then
+      rm -f "$PIDFILE"
+      echo "Stopped server (pid $pid)"
+      return 0
+    else
+      echo "Failed to stop pid $pid; removing pidfile"
+      rm -f "$PIDFILE"
+      return 2
+    fi
+  else
+    echo "Not running"
+    return 1
+  fi
+}
+
+toggle() {
+  status >/dev/null 2>&1
+  st=$?
+  if [ $st -eq 0 ]; then
+    stop
+  else
+    start
+  fi
+}
+
+case "$1" in
+  start) start ;;
+  stop) stop ;;
+  status) status ;;
+  toggle|"") toggle ;;
+  *) echo "Usage: $0 {start|stop|status|toggle}"; exit 2 ;;
+esac
